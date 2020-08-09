@@ -11,7 +11,6 @@ mod user_creation;
 // mod users;
 // mod logout;
 
-
 #[async_std::test]
 async fn creating_a_user() {
     let mut server = test_setup().await;
