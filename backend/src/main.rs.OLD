@@ -1,0 +1,38 @@
+use dotenv;
+use sqlx::Pool;
+use sqlx::PgPool;
+use sqlx::query;
+use tide::Server;
+use tide::Request;
+
+#[async_std::main]
+async fn main() -> Result<(), Error>{
+    dotenv::dotenv().ok();
+    pretty_env_logger::init();
+
+    let db_url = std::env::var("DATABASE_URL").unwrap();
+    let db_pool: PgPool = Pool::new(&db_url).await.unwrap();
+
+    // Get the app server running, for real now
+     //Tide has "state" with all shared services});
+    let mut app: Server<State> = Server::with_state(State { db_pool });
+
+    app.at("/").get(|req: Request<State>| async move { 
+        let db_pool: &PgPool = &req.state().db_pool;
+
+        let rows = query!( "select 1 as one" ).fetch_one(db_pool).await?;
+        dbg!(rows);
+
+        Ok("Hello world!")
+    });
+
+    app.listen("127.0.0.1:8080").await?;
+
+    Ok(())
+}
+
+
+#[derive(Debug, Clone)]
+struct State {
+    db_pool: PgPool,
+}
