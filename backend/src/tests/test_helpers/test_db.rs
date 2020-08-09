@@ -14,7 +14,7 @@ pub struct TestDb {
 impl TestDb {
     pub async fn new() -> Self {
         dotenv::dotenv().ok();
-        pretty_env_logger::init();
+        pretty_env_logger::try_init().ok();
         
         let db_url = db_url();
         create_db(&db_url).await;
