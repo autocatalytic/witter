@@ -1,4 +1,5 @@
 use dotenv;
+use::std::env as std_env;
 
 use sqlx::Pool;
 use sqlx::PgPool;
@@ -27,7 +28,7 @@ async fn main() {
 }
 
 pub async fn make_db_pool() -> PgPool {
-    let db_url = std::env::var("DATABASE_URL").unwrap();
+    let db_url = std_env::var("DATABASE_URL").unwrap();
     Pool::new(&db_url).await.unwrap()
 }
 
@@ -44,6 +45,10 @@ async fn server(db_pool: PgPool) -> Server<State> {
             .allow_origin(Origin::Any),
     );
     server.with(middlewares::ErrorReponseToJson);
+
+//    just playing, let's get into the routing and responses
+//   server.at("/").get(|_| async { Ok("Hello, world!") });
+//    server.at("/").get(endpoints::users::get);
 
     server.at("/users").post(endpoints::users::create);
     server
