@@ -10,7 +10,7 @@ use tide::http::StatusCode;
 use tide::{Request, Response};
 
 pub mod me;
-// pub mod tweets;
+pub mod tweets;
 pub mod users;
 
 lazy_static! {
