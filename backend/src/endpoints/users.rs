@@ -147,123 +147,122 @@ pub async fn login(mut req: Request<State>) -> tide::Result {
     }
 }
 
-// pub async fn follow(req: Request<State>) -> tide::Result {
-//     let db_pool = req.state().db_pool.clone();
-//     let current_user = authenticate(&req).await?;
-//     let username = req.param::<String>("username")?;
+pub async fn follow(req: Request<State>) -> tide::Result {
+    let db_pool = req.state().db_pool.clone();
+    let current_user = authenticate(&req).await?;
+    let username = req.param::<String>("username")?;
 
-//     let row = query!("select id from users where username = $1", username)
-//         .fetch_optional(&db_pool)
-//         .await?;
-//     let followee_id: Uuid = if let Some(row) = row { row.id } else { todo!() };
+    let row = query!("select id from users where username = $1", username)
+        .fetch_optional(&db_pool)
+        .await?;
+     let followee_id: Uuid = if let Some(row) = row { row.id } else { todo!() };
 
-//     if current_user.id == followee_id {
-//         return Err(Error::from_str(
-//             StatusCode::UnprocessableEntity,
-//             "You cannot follow yourself",
-//         ));
-//     }
+    if current_user.id == followee_id {
+        return Err(Error::from_str(
+            StatusCode::UnprocessableEntity,
+            "You cannot follow yourself",
+        ));
+    }
 
-//     if user_following(current_user.id, followee_id, &db_pool).await? {
-//         return Err(Error::from_str(
-//             StatusCode::UnprocessableEntity,
-//             "You cannot follow the same user twice",
-//         ));
-//     }
+    if user_following(current_user.id, followee_id, &db_pool).await? {
+        return Err(Error::from_str(
+            StatusCode::UnprocessableEntity,
+            "You cannot follow the same user twice",
+        ));
+    }
 
-//     let now = Utc::now();
-//     let rows_inserted = query!(
-//         r#"
-//             insert into follows (id, follower_id, followee_id, created_at, updated_at)
-//             values ($1, $2, $3, $4, $5)
-//         "#,
-//         Uuid::new_v4(),
-//         current_user.id,
-//         followee_id,
-//         now,
-//         now,
-//     )
-//     .execute(&db_pool)
-//     .await?;
+    let now = Utc::now();
+    let rows_inserted = query!(
+        r#"
+            insert into follows (id, follower_id, followee_id, created_at, updated_at)
+            values ($1, $2, $3, $4, $5)
+        "#,
+        Uuid::new_v4(),
+        current_user.id,
+        followee_id,
+        now,
+        now,
+    )
+    .execute(&db_pool)
+    .await?;
 
-//     if rows_inserted == 1 {
-//         Value::Null.to_response_with_status(StatusCode::Created)
-//     } else {
-//         todo!()
-//     }
-// }
+    if rows_inserted == 1 {
+        Value::Null.to_response_with_status(StatusCode::Created)
+    } else {
+        todo!()
+    }
+}
 
-// pub async fn following(req: Request<State>) -> tide::Result {
-//     let db_pool = req.state().db_pool.clone();
-//     let username = req.param::<String>("username")?;
+pub async fn following(req: Request<State>) -> tide::Result {
+    let db_pool = req.state().db_pool.clone();
+    let username = req.param::<String>("username")?;
 
-//     // TODO: extract this into function
-//     let row = query!("select id from users where username = $1", username)
-//         .fetch_optional(&db_pool)
-//         .await?;
-//     let user_id: Uuid = if let Some(row) = row { row.id } else { todo!() };
+    // TODO: extract this into function
+    let row = query!("select id from users where username = $1", username)
+        .fetch_optional(&db_pool)
+        .await?;
+    let user_id: Uuid = if let Some(row) = row { row.id } else { todo!() };
 
-//     let rows = query_as!(
-//         UserResponse,
-//         r#"
-//             select users.id, users.username
-//             from users
-//             inner join follows on
-//                 follows.follower_id = $1
-//                 and follows.followee_id = users.id
-//         "#,
-//         user_id,
-//     )
-//     .fetch_all(&db_pool)
-//     .await?;
+    let rows = query_as!(
+        UserResponse,
+        r#"
+            select users.id, users.username
+            from users
+            inner join follows on
+                follows.follower_id = $1
+                and follows.followee_id = users.id
+        "#,
+        user_id,
+    )
+    .fetch_all(&db_pool)
+    .await?;
 
-//     rows.to_response()
-// }
+    rows.to_response()
+}
 
-// pub async fn followers(req: Request<State>) -> tide::Result {
-//     let db_pool = req.state().db_pool.clone();
-//     let username = req.param::<String>("username")?;
+pub async fn followers(req: Request<State>) -> tide::Result {
+    let db_pool = req.state().db_pool.clone();
+    let username = req.param::<String>("username")?;
 
-//     let row = query!("select id from users where username = $1", username)
-//         .fetch_optional(&db_pool)
-//         .await?;
-//     let user_id: Uuid = if let Some(row) = row { row.id } else { todo!() };
+    let row = query!("select id from users where username = $1", username)
+        .fetch_optional(&db_pool)
+        .await?;
+    let user_id: Uuid = if let Some(row) = row { row.id } else { todo!() };
 
-//     let rows = query_as!(
-//         UserResponse,
-//         r#"
-//             select users.id, users.username
-//             from users
-//             inner join follows on
-//                 follows.followee_id = $1
-//                 and follows.follower_id = users.id
-//         "#,
-//         user_id,
-//     )
-//     .fetch_all(&db_pool)
-//     .await?;
+    let rows = query_as!(
+        UserResponse,
+        r#"
+            select users.id, users.username
+            from users
+            inner join follows on
+                follows.followee_id = $1
+                and follows.follower_id = users.id
+        "#,
+        user_id,
+    )
+    .fetch_all(&db_pool)
+    .await?;
 
-//     rows.to_response()
-// }
+    rows.to_response()
+}
 
-// async fn user_following(
-//     current_user_id: Uuid,
-//     followee_id: Uuid,
-//     db_pool: &PgPool,
-// ) -> tide::Result<bool> {
-//     let row = query!(
-//         r#"
-//         select 1 as one from follows
-//         where follower_id = $1 and followee_id = $2
-//     "#,
-//         current_user_id,
-//         followee_id
-//     )
-//     .fetch_optional(db_pool)
-//     .await?;
+async fn user_following(
+    current_user_id: Uuid,
+    followee_id: Uuid,
+    db_pool: &PgPool,) -> tide::Result<bool> {
+        let row = query!(
+            r#"
+            select 1 as one from follows
+            where follower_id = $1 and followee_id = $2
+        "#,
+            current_user_id,
+            followee_id
+        )
+        .fetch_optional(db_pool)
+        .await?;
 
-//     Ok(row.is_some())
-// }
+        Ok(row.is_some())
+}
 
 pub async fn get(req: Request<State>) -> tide::Result {
     let db_pool = &req.state().db_pool;

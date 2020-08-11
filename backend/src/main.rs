@@ -55,16 +55,16 @@ async fn server(db_pool: PgPool) -> Server<State> {
         .at("/users/:username/session")
         .post(endpoints::users::login)
         .delete(endpoints::users::logout);
-    // server
-    //     .at("/users/:username/follow")
-    //     .post(endpoints::users::follow);
-    // server
-    //     .at("/users/:username/following")
-    //     .get(endpoints::users::following);
-    // server
-    //     .at("/users/:username/followers")
-    //     .get(endpoints::users::followers);
-    server.at("/users/:username").get(endpoints::users::get);
+    server
+        .at("/users/:username/follow")
+        .post(endpoints::users::follow);
+    server
+        .at("/users/:username/following")
+        .get(endpoints::users::following);
+    server
+        .at("/users/:username/followers")
+        .get(endpoints::users::followers);
+//    server.at("/users/:username").get(endpoints::users::get);
 
     server.at("/me").get(endpoints::me::get);
     // server.at("/me/timeline").get(endpoints::me::timeline);
