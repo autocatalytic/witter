@@ -6,5 +6,5 @@ mod user_creation;
 // mod logout;
 mod posting_tweets;
 mod follows;
-// mod timeline;
+mod timeline;
 // mod users;

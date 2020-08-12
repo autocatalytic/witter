@@ -46,10 +46,6 @@ async fn server(db_pool: PgPool) -> Server<State> {
     );
     server.with(middlewares::ErrorReponseToJson);
 
-//    just playing, let's get into the routing and responses
-//   server.at("/").get(|_| async { Ok("Hello, world!") });
-//    server.at("/").get(endpoints::users::get);
-
     server.at("/users").post(endpoints::users::create);
     server
         .at("/users/:username/session")
@@ -67,7 +63,7 @@ async fn server(db_pool: PgPool) -> Server<State> {
 //    server.at("/users/:username").get(endpoints::users::get);
 
     server.at("/me").get(endpoints::me::get);
-    // server.at("/me/timeline").get(endpoints::me::timeline);
+    server.at("/me/timeline").get(endpoints::me::timeline);
 
     server.at("/tweets").post(endpoints::tweets::create);
 
