@@ -33,7 +33,7 @@ pub async fn test_setup() -> TestServer {
     std::env::set_var("APP_ENV", "test");
     dotenv::dotenv().ok();
 
-    pretty_env_logger::try_init().ok();
+    // pretty_env_logger::try_init().ok();
 
     let test_db = TestDb::new().await;
     let db_pool = test_db.db();

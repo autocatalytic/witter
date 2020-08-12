@@ -19,7 +19,7 @@ mod responses;
 #[async_std::main]
 async fn main() {
     dotenv::dotenv().ok();
-    pretty_env_logger::try_init().ok();
+//    pretty_env_logger::try_init().ok();
 
     let db_pool = make_db_pool().await;
     let app = server(db_pool).await;

@@ -1,12 +1,7 @@
 use crate::endpoints::authenticate;
 use crate::responses::BuildApiResponse;
 use crate::State;
-use serde::Deserialize;
-// use shared::responses::TweetResponse;
-use sqlx::query_as;
 use tide::Request;
-use shared::responses::*;
-use uuid::Uuid;
 
 pub async fn get(req: Request<State>) -> tide::Result {
     let user = authenticate(&req).await?;
