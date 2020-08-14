@@ -7,4 +7,4 @@ mod user_creation;
 mod posting_tweets;
 mod follows;
 mod timeline;
-// mod users;
+mod users;

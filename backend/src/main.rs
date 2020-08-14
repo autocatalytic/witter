@@ -19,7 +19,7 @@ mod responses;
 #[async_std::main]
 async fn main() {
     dotenv::dotenv().ok();
-//    pretty_env_logger::try_init().ok();
+    pretty_env_logger::try_init().ok();
 
     let db_pool = make_db_pool().await;
     let app = server(db_pool).await;
@@ -60,7 +60,7 @@ async fn server(db_pool: PgPool) -> Server<State> {
     server
         .at("/users/:username/followers")
         .get(endpoints::users::followers);
-//    server.at("/users/:username").get(endpoints::users::get);
+    server.at("/users/:username").get(endpoints::users::get);
 
     server.at("/me").get(endpoints::me::get);
     server.at("/me/timeline").get(endpoints::me::timeline);

@@ -17,7 +17,7 @@ wasm-bindgen-test = "0.3.13"
 [dependencies]
 # This commit points to Seed 0.7.0 with important fixes.
 # Replace with `seed = "0.8.0"` (or newer) once released.
-seed = { git = "https://github.com/seed-rs/seed", rev = "0a538f0" }
+seed = { git = "https://github.com/seed-rs/seed", rev = "b25cf59" }
 serde = { version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
 shared = { path = "../shared", version = "0.1.0" }

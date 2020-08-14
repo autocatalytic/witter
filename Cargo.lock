@@ -620,6 +620,16 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 
 [[package]]
 name = "cookie"
+version = "0.13.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c60ef6d0bbf56ad2674249b6bb74f2c6aeb98b98dd57b5d3e37cace33011d69"
+dependencies = [
+ "percent-encoding",
+ "time 0.2.16",
+]
+
+[[package]]
+name = "cookie"
 version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1373a16a4937bc34efec7b391f9c1500c30b8478a701a4f44c9165cc0475a6e0"
@@ -1223,7 +1233,7 @@ checksum = "bb4daf8dc001485f4a32a7a17c54c67fa8a10340188f30ba87ac0fe1a9451e97"
 dependencies = [
  "anyhow",
  "async-std",
- "cookie",
+ "cookie 0.14.2",
  "infer",
  "pin-project-lite",
  "rand 0.7.3",
@@ -2035,10 +2045,10 @@ dependencies = [
 [[package]]
 name = "seed"
 version = "0.7.0"
-source = "git+https://github.com/seed-rs/seed?rev=0a538f0#0a538f03d6aeb56b00d997c80a666e388279a727"
+source = "git+https://github.com/seed-rs/seed?rev=b25cf59#b25cf5990ae2189548281942713f4e305743f6d5"
 dependencies = [
  "console_error_panic_hook",
- "cookie",
+ "cookie 0.13.3",
  "dbg",
  "enclose",
  "futures 0.3.5",
