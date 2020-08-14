@@ -1,0 +1,57 @@
+// fn before_mount(_: Url) -> BeforeMount {
+//     // Since we have the "loading..." text in the app section of index.html,
+//     // we use MountType::Takover which will overwrite it with the seed generated html
+//     BeforeMount::new().mount_type(MountType::Takeover)
+
+
+
+
+    //     div![
+    //     input![
+    //         el_ref(&model.username_input),
+    //         attrs! { At::Placeholder => "Username"},
+    //         ]
+    //     ],
+    // div![
+    //     input![
+    //         el_ref(&model.password_input),
+    //         attrs! { At::Placeholder => "Password"},
+    //         ]
+    //     ],
+    //     div![
+    //         button![
+    //             "Submit",
+    //             ev(Ev::Click, |_| Msg::CreateUserFormSubmitted),
+    //         ]
+    //     ]
+    // ]
+
+
+
+// let urls = Urls::new(&model.base_url);
+
+
+pub struct Urls<'a> {
+    base_url: std::borrow::Cow<'a, Url>,
+}    
+
+impl<'a> Urls<'a> {
+    pub fn new(base_url: impl Into<std::borrow::Cow<'a, Url>>) -> Self {
+        Self {
+            base_url: base_url.into(),
+        }
+    }
+
+    pub fn base_url(&self) -> Url {
+        self.base_url.clone().into_owned()
+    }
+
+    pub fn login(&self) -> Url {
+        self.base_url().add_path_part("login")
+    }
+
+    pub fn sign_up(&self) -> Url {
+        self.base_url().add_path_part("sign_up")
+    }
+}
+
