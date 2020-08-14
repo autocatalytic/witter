@@ -83,6 +83,14 @@ pub fn get(url: &str) -> TestRequest {
     }
 }
 
+pub fn delete(url: &str) -> TestRequest {
+    TestRequest {
+        url: url.to_string(),
+        headers: HashMap::new(),
+        kind: TestRequestKind::Delete,
+    }
+}
+
 pub fn post<T: Serialize>(url: &str, body: Option<T>) -> TestRequest {
     let body = body.map(|body| serde_json::to_value(body).unwrap());
     let kind = TestRequestKind::Post(body);
@@ -108,6 +116,7 @@ pub struct TestRequest {
 #[derive(Debug)]
 pub enum TestRequestKind {
     Get,
+    Delete,
     Post(Option<Value>),
 }
 
@@ -128,6 +137,7 @@ impl TestRequest {
                 }
                 req
             }
+            TestRequestKind::Delete => Request::new(Method::Delete, url),
         };
 
         for (key, value) in self.headers {

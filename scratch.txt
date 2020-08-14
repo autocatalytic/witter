@@ -55,3 +55,59 @@ impl<'a> Urls<'a> {
     }
 }
 
+
+
+Seed model description:
+
+Start function takes 
+    o root element (app) 
+    o the init function (AfterMount previously)
+    o update
+    o and view
+
+"init" 
+    o takes Url that the user is currently loading
+    o loads it into the browser URI
+    o implements the seed OrdersContainer
+    o sets up the initial message on app start
+    o builds and returns the model
+
+ OrderContainer ("order") then allows you to 
+    o set up subscriptions to different events in seed
+    o for example, client notification that URL had changed
+    o Subscribe on the type
+    o Seed checks subscribers and notifies them when types change
+
+"view"
+    o Hrefs take anything that implements fmt::Display
+    o generates HTML reflecting the model state
+
+"update"
+    o pattern matches on message events 
+    o calls functions that implement changes in logic
+    o stores information required to maintain state
+    o rewrites (updates) the state of the model 
+    o model updates trigger different views
+
+
+========================
+
+Witter status as of beginning of stream 7:
+
+    o Have a tide server running on backend, connected to Postgres
+    o Create routes for the front end with server.at
+    o Create methods for handling endpoints like endpoints::users::create
+    o Methods return tide Responses
+    o Front end (seed/WASM) makes HTTP calls to backend,
+    o using orders.perform_cmd to await messages and resend them
+
+seed is async compatible, so HTTP calls, for example, are futures
+
+Today, 8/11/2020, looking to improve the front/back code sharing
+starting with ApiEndpoints, by creating traits common between them
+
+
+
+
+
+

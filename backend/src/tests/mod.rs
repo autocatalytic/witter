@@ -3,7 +3,7 @@ pub mod test_helpers;
 
 mod login;
 mod user_creation;
-// mod logout;
+mod logout;
 mod posting_tweets;
 mod follows;
 mod timeline;

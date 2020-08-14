@@ -13,7 +13,7 @@ mod api;
 mod view;
 
 // ------ ------
-//     Model
+//     Model - state of the application
 // ------ ------
 
 // `Model` describes our app state.
@@ -23,7 +23,7 @@ pub struct Model {
     sign_up_form: SignUpForm,
     auth_token: Option<String>,
     current_user: Option<UserResponse>,
-    base_url: Url,
+//    base_url: Url,
     page: Page,
 }
 
@@ -64,28 +64,28 @@ impl fmt::Display for Page {
 }
 
 // ------ ------
-// Before Mount
+// Before Mount -- Still useful?
 // ------ ------
 
 // ------ ------
-//  After Mount
+//  After Mount -- Deprecated
 // ------ ------
 
-// I think this is the initial build of the app, before update messages
-fn after_mount(url: Url, _: &mut impl Orders<Msg>) -> AfterMount<Model> {
+// // I think this is the initial build of the app, before update messages
+// fn after_mount(url: Url, _: &mut impl Orders<Msg>) -> AfterMount<Model> {
 
-    AfterMount::new(Model {
-        auth_token: None,
-        current_user: None,
-        base_url: url.to_base_url(),
-        page: Page::Root,
-        login_form: Default::default(),
-        sign_up_form: Default::default(),
-    })
-}
+//     AfterMount::new(Model {
+//         auth_token: None,
+//         current_user: None,
+//         base_url: url.to_base_url(),
+//         page: Page::Root,
+//         login_form: Default::default(),
+//         sign_up_form: Default::default(),
+//     })
+// }
 
 // ------ ------
-//    Update
+//    Update - change state with messages
 // ------ ------
 
 // `update` describes how to handle each `Msg`, and each 
@@ -96,8 +96,7 @@ pub enum Msg {
     SignUpFormSubmitted,
     CreateUserEndpointResponded(String),
     MeLoaded(UserResponse),
-    UrlChanged(Url),
-//    UrlChanged(subs::UrlChanged),
+    UrlChanged(subs::UrlChanged),
     #[allow(dead_code)]
     Noop,
 }
@@ -105,21 +104,9 @@ pub enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::Noop => {}
-        Msg::UrlChanged(url) => {
-            let path = url.path().iter().map(|s| s.as_str()).collect::<Vec<_>>();
-            log!(path);
-
-            let page = match path.as_slice() {
-                ["sign_up"] => Page::SignUp,
-                ["login"] => Page::Login,
-                ["users", username] => Page::UserProfile(username.to_string()),
-                [] => Page::Root,
-                _ => todo!(),
-            };
-
+        Msg::UrlChanged(subs::UrlChanged(url)) => {
+            let page = url_to_page(&url);
             model.page = page;
-
-            seed::push_route(url);
         }
         Msg::MeLoaded(user) => {
             model.current_user = Some(user);
@@ -144,39 +131,62 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     }
 }
 
-#[derive(Debug, Deserialize)]
-struct Data<T> {
-    data: T,
+fn url_to_page(url: &Url) -> Page {
+    let path = url.path().iter().map(|s| s.as_str()).collect::<Vec<_>>();
+
+    match path.as_slice() {
+        ["sign_up"] => Page::SignUp,
+        ["login"] => Page::Login,
+        ["users", username] => Page::UserProfile(username.to_string()),
+        [] => Page::Root,
+        _ => todo!(),
+    }
 }
 
-// ------ ------
-//     View
-// ------ ------
+// #[derive(Debug, Deserialize)]
+// struct Data<T> {
+//     data: T,
+// }
 
-// `view` describes what to display, based on the state of the model
-// -- moved to module -- 
+// ------ ------
+//     View - change your state into HTML
+// ------ ------
+// ** moved to module **
 
-fn routes(url: Url) -> Option<Msg> {
-    log!("url in routes fn", url);
-    Some(Msg::UrlChanged(url))
-}
 
 // ------ ------
 //     Start
 // ------ ------
 
 // `init` describes what should happen when your app started.
-// fn init(url: Url, _: &mut impl Orders<Msg>) -> Model {
-//     Model::default()
-// }
-//    start("app", init, update, view);
+fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    log!("after mount", url.to_string());
 
+    orders.subscribe(Msg::UrlChanged);
+    orders.send_msg(Msg::UrlChanged(subs::UrlChanged(url.clone())));
+    let page = url_to_page(&url);
 
-// (This function is invoked by `init` function in `index.html`.)
+    Model {
+        auth_token: None,
+        current_user: None,
+        page,
+        login_form: Default::default(),
+        sign_up_form: Default::default(),
+    }
+
+}
+
+// This function starts the app and initiates the js bindings
+// It also monitors changes to the app, when messages are sent
+
 #[wasm_bindgen(start)]
 pub fn start() {
-    App::builder(update, view::view)
-        .after_mount(after_mount)
-        .routes(routes)
-        .build_and_start();
+    App::start("app", init, update, view::view);
 }
+
+// Don't need this?
+// fn routes(url: Url) -> Option<Msg> {
+//     log!("url in routes fn", url);
+//     Some(Msg::UrlChanged(url))
+// }
+
