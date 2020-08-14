@@ -2,3 +2,5 @@
 .DS_Store
 .env
 frontend/src/lib.rs.O
+backend/drop_db.script
+scratch.txt
