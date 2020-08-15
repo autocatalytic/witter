@@ -1,6 +1,6 @@
 # Project Notes
 
-Seed model description:
+## Seed Model Description
 
 Start function takes 
  - root element (app) 
@@ -32,6 +32,28 @@ Start function takes
  - rewrites (updates) the state of the model 
  - model updates trigger different views
 
+
+## Backend Setup
+
+ - Running on mac OSX using default terminal and vscode
+ - Postgres for the database, installed using Brew
+   - Do NOT forget to create the postgres user as root!
+   - Strange issue: have to `unset USER` when starting cargo
+ - Using tide framework instead of Rocket because it's fully async
+ - Running CORS middleware for decorating some messages
+
+> Cross Origin Resource Sharing (CORS) is a W3C standard that allows a server to relax the same-origin policy. Using CORS, a server can explicitly allow some cross-origin requests while rejecting others. CORS is safer and more flexible than earlier techniques such as JSONP.
+
+ - Trying to maximize re-use of code between front/back end
+
+todo!() - Messages diagram
+todo!() - API description with abstractions
+todo!() - Datamodel description
+todo!() - Reasons for choosing tide write-up
+
+
+## Need to figure out presentation layer details
+CSS, look and feel, etc.
 
 ========================
 
