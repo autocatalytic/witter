@@ -3,7 +3,7 @@
 Personal goals: learn more about Rust, study modern web frameworks, deploy some WASM
 
 
-Secondary objectives: deploy something to personal server, be helpful to the open-source community (doesn't matter how), learn a modern IDE (looks like it'll be vscode) and cool project tools like https://github.com/davidpdrsn/assert-json-diff.git.
+Secondary objectives: deploy something to personal server, be helpful to the open-source community (doesn't matter how), learn a modern IDE (looks like it'll be vscode) and cool project tools like https://github.com/davidpdrsn/assert-json-diff.git, and code with test driven development techniques (TTD).
 
 
 Side note: I began re-tooling my web understanding in the NodeJS, React, npm world and soon realized I was importing and integrating too many libraries that I had very little capacity to understand. Rather than continue a path requiring a detailed study of javascript I've decided to learn Rust because it's a more foundational language, which can also be quite webby since the introduction of WASM. 
@@ -35,6 +35,7 @@ Start function takes
 "view"
  - Hrefs take anything that implements fmt::Display
  - generates HTML reflecting the model state
+ - Nice macros to hide HTML typing like `div!()`
 
 "update"
  - pattern matches on message events 
@@ -42,22 +43,26 @@ Start function takes
  - stores information required to maintain state
  - rewrites (updates) the state of the model 
  - model updates trigger different views
-
+ 
+ This is great: https://github.com/seed-rs/seed-rs-realworld 
 
 ## Backend Setup
 
 This is intended to be a "bleeding edge" project to explore fully async Rust features, combined with WASM front end deployment. If we were building a project with ambitions of going to production in short-order, going with Node-JS or LAMP or another traditional stack would be the obvious choice. Finding people with the skills here is hard outside of crypto, and nearly all the layers are subject to breaking changes regularly. Indeed, in terms of performance Javascript is likely just as fast or faster than this build, because browsers are so well tuned for running compiled JS these days.
 
- - Running on mac OSX using default terminal and vscode
+ - Running mac OSX with terminal and vscode (had to update mac mini with SSD first!)
  - Postgres for the database, installed using Brew
    - Do NOT forget to create the postgres user as root!
    - Strange issue: have to `unset USER` when running `cargo test` or DB error
+ - Sqlx for SQL Toolkit written in Rust
+ >> An async, pure Rust SQL crate featuring compile-time checked queries without a DSL. Even better: it's truly async and the Postgres driver is written in Rust, with connection pooling built-in.
  - Using tide framework instead of Rocket because it's fully async
  - Running CORS middleware for decorating some messages
 
 >> Cross Origin Resource Sharing (CORS) is a W3C standard that allows a server to relax the same-origin policy. Using CORS, a server can explicitly allow some cross-origin requests while rejecting others. CORS is safer and more flexible than earlier techniques such as JSONP.  https://fetch.spec.whatwg.org/#http-cors-protocol
 
  - Maximizing re-use of code between layers with ROOT/shared/src
+ - Very little time spent on data model/postgres - this is all about the app layers
  - 
 
 todo!() - Messages diagram
@@ -73,7 +78,9 @@ todo!() - Reasons for choosing tide write-up
 
 
 ## Need to figure out presentation layer details
-CSS, look and feel, etc.
+ - CSS, look and feel, etc.
+
+This project reminds me of a previous product development effort, where I wrote up a bunch of Gherkin files to define the requirements. Quick summary of how Gherkin and Cucumber help requirements development and acceptance testing: https://medium.com/@mvwi/story-writing-with-gherkin-and-cucumber-1878124c284c
 
 ========================
 
@@ -88,6 +95,9 @@ CSS, look and feel, etc.
 
 seed is async compatible, so HTTP calls, for example, are futures 
 
-Goals for 8/11/2020: looking to improve the front/back code sharing
-starting with ApiEndpoints, by creating traits common between them
+Goals for 8/11/2020: 
+ - looking to improve the front/back code sharing
+ - starting with ApiEndpoints, by creating traits common between them
+ - better understand seed DOM macros and front-end stuff
+
 
