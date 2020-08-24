@@ -6,10 +6,10 @@ Personal goals: learn more about Rust, study modern web frameworks, deploy some 
 Secondary objectives: deploy something to personal server, be helpful to the open-source community (doesn't matter how), learn a modern IDE (looks like it'll be vscode) and cool project tools like https://github.com/davidpdrsn/assert-json-diff.git, and code with test driven development techniques (TTD).
 
 
-Side note: I began re-tooling my web understanding in the NodeJS, React, npm world and soon realized I was importing and integrating too many libraries that I had very little capacity to understand. Rather than continue a path requiring a detailed study of javascript I've decided to learn Rust because it's a more foundational language, which can also be quite webby since the introduction of WASM. 
+Side note: I began re-tooling my web services understanding in the NodeJS, React, npm world and soon realized I was importing and integrating too many libraries that I had very little capacity to understand. Rather than continue a path requiring a detailed study of javascript, I've decided to learn Rust because it's a more foundational language which can also be webby since the introduction of WASM, but is also systems safe.
 
 
-Of course WASM has to talk with javascript (hello wasm_bindgen) so I'll likely have to head down that road eventually anyway, but hopefully my foundation will be more solid.
+Of course WASM has to talk with javascript (hello wasm_bindgen) so I'll likely have to head down the js/css road anyway, but hopefully my foundation will be more solid by then.
 
 ## Seed Model Description
 
@@ -57,7 +57,7 @@ This is intended to be a "bleeding edge" project to explore fully async Rust fea
  - Sqlx for SQL Toolkit written in Rust
  >> An async, pure Rust SQL crate featuring compile-time checked queries without a DSL. Even better: it's truly async and the Postgres driver is written in Rust, with connection pooling built-in.
  - Using tide framework instead of Rocket because it's fully async
- - Running CORS middleware for decorating some messages
+ - Running CORS middleware for decorating some messages, mostly json errors
 
 >> Cross Origin Resource Sharing (CORS) is a W3C standard that allows a server to relax the same-origin policy. Using CORS, a server can explicitly allow some cross-origin requests while rejecting others. CORS is safer and more flexible than earlier techniques such as JSONP.  https://fetch.spec.whatwg.org/#http-cors-protocol
 

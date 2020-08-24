@@ -20,7 +20,7 @@ async fn logging_out() {
         .await;
     assert_eq!(status, 200);
 
-    let (_, status, _) = get("/users/bob/session")
+    let (_, status, _) = get("/me")
     .header("Authorization", format!("Bearer {}", token))
     .send(&mut server)
     .await;

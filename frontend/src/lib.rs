@@ -1,13 +1,13 @@
-use seed::browser::fetch::header::Header;
-use seed::virtual_dom::el_ref::el_ref;
 use seed::{prelude::*, *};
-use serde::{ Deserialize, Serialize };
-use serde_json::Value;
-// use std::future::Future;
-use shared::responses::{ApiResponse, TokenResponse, UserResponse};
+use shared::responses::{
+    ApiResponse, TokenResponse, UserResponse, TweetResponse,
+};
 use shared::payloads::CreateUserPayload;
+use shared::payloads::CreateTweetPayload;
 use web_sys::HtmlInputElement;
 use std::fmt;
+use shared::{GetUser, GetUserUrl};
+use shared::{NoPayLoad, PostTweet, PostTweetUrl};
 
 mod api;
 mod view;
@@ -71,32 +71,23 @@ impl fmt::Display for Page {
 //  After Mount -- Deprecated
 // ------ ------
 
-// // I think this is the initial build of the app, before update messages
-// fn after_mount(url: Url, _: &mut impl Orders<Msg>) -> AfterMount<Model> {
-
-//     AfterMount::new(Model {
-//         auth_token: None,
-//         current_user: None,
-//         base_url: url.to_base_url(),
-//         page: Page::Root,
-//         login_form: Default::default(),
-//         sign_up_form: Default::default(),
-//     })
-// }
-
 // ------ ------
 //    Update - change state with messages
 // ------ ------
 
 // `update` describes how to handle each `Msg`, and each 
 // 'Msg" describes events you modify state (of the model) with
-#[derive(Clone)]
+#[derive(Debug)]
 pub enum Msg {
     LoginFormSubmitted,
     SignUpFormSubmitted,
     CreateUserEndpointResponded(String),
     MeLoaded(UserResponse),
     UrlChanged(subs::UrlChanged),
+    LoadUserProfile(String),
+    GetUserLoaded(UserResponse),
+    TweetPosted(TweetResponse),
+    RequestFailed(FetchError),
     #[allow(dead_code)]
     Noop,
 }
@@ -128,6 +119,27 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             model.auth_token = Some(token.clone());
             orders.perform_cmd(api::reload_current_user(token.to_string()));
         }
+        Msg::LoadUserProfile(username) => {
+            orders.perform_cmd(api::fetch::<GetUser>(
+                model.auth_token.clone(), 
+                GetUserUrl { username },
+                NoPayLoad,
+                Msg::GetUserLoaded
+            ));
+
+            orders.perform_cmd(api::fetch::<PostTweet>(
+//                Some("acXVaKX4mRrtilqMEcWjXGNjP1sXZla0".to_string()),
+                model.auth_token.clone(), 
+                PostTweetUrl,
+                CreateTweetPayload {
+                    text: "Tweet text".to_string(),
+                },
+                Msg::TweetPosted,
+            ));
+        }
+        Msg::GetUserLoaded(user) => log!("user loaded", user),
+        Msg::TweetPosted(tweet) => log!(tweet),
+        Msg::RequestFailed(err) => log!("request failed", err),
     }
 }
 
@@ -160,11 +172,17 @@ fn url_to_page(url: &Url) -> Page {
 
 // `init` describes what should happen when your app started.
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    log!("after mount", url.to_string());
-
     orders.subscribe(Msg::UrlChanged);
     orders.send_msg(Msg::UrlChanged(subs::UrlChanged(url.clone())));
+    
     let page = url_to_page(&url);
+
+    match &page {
+        Page::UserProfile(username) => {
+            orders.send_msg(Msg::LoadUserProfile(username.to_string()));
+        }
+        _ => {}
+    }
 
     Model {
         auth_token: None,
