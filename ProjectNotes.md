@@ -98,6 +98,11 @@ seed is async compatible, so HTTP calls, for example, are futures
 Goals for 8/11/2020: 
  - looking to improve the front/back code sharing
  - starting with ApiEndpoints, by creating traits common between them
+ - make the API type safe
  - better understand seed DOM macros and front-end stuff
 
+Goals for 8/20/2020:
+- build front end features
+- clean up frontend main.rs to use type safe API
+- 
 

@@ -1,10 +1,13 @@
-use crate::{Model, Msg, Page};
+use crate::{flash::FlashMsg, Model, Msg, Page};
 use seed::{prelude::*, *};
 use shared::responses::UserResponse;
 
 // `view` describes what to display, based on the state of the model
 pub fn view(model: &Model) -> Node<Msg> {
-    div![nav(model), view_page(model),]
+    div![
+        flash(model),
+        nav(model), 
+        view_page(model),]
 }
 
 // for example, if model.page is "Login", login(model) is called, and
@@ -16,7 +19,24 @@ fn view_page(model: &Model) -> Node<Msg> {
         Page::Login => login(model),
         Page::SignUp => sign_up(model),
         Page::UserProfile(username) => user_profile(username),
+        Page::SignedIn => signed_in(),
     }
+}
+
+fn flash(model: &Model) -> Node<Msg> {
+    match model.flash.get() {
+        None => div![],
+        Some(FlashMsg::Notice(msg)) => div![
+            "NOTICE: ", msg
+        ],
+        Some(FlashMsg::Error(msg)) => div![
+            "ERROR: ", msg
+        ],
+    }
+}
+
+fn signed_in() -> Node<Msg> {
+    div!("Signed in")
 }
 
 fn nav(model: &Model) -> Node<Msg> {
@@ -28,6 +48,8 @@ fn nav(model: &Model) -> Node<Msg> {
                 &current_user.username,
                 attrs! { At::Href => Page::UserProfile(current_user.username.clone()) }
             ],
+            " | ",
+            a!["Logout", ev(Ev::Click, |_| Msg::Logout), attrs! { At::Href => "#" }],
         ]
     } else {
         div![

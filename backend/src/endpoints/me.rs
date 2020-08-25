@@ -1,14 +1,22 @@
 use crate::endpoints::authenticate;
 use crate::responses::BuildApiResponse;
 use crate::State;
-use tide::Request;
+use tide::{StatusCode, Request};
 use sqlx::query_as;
-use shared::responses::TweetResponse;
+use shared::{Me, responses::{UserResponse, TweetResponse}, NoPayLoad};
 use serde::Deserialize;
+use crate::BackendApiEndpoint;
+use async_trait::async_trait;
 
-pub async fn get(req: Request<State>) -> tide::Result {
+#[async_trait]
+impl BackendApiEndpoint for Me {
+    async fn handler(
+        req: Request<State>, 
+        _: NoPayLoad
+    ) -> tide::Result<(UserResponse, StatusCode)> {
     let user = authenticate(&req).await?;
-    user.to_response()
+    Ok((user, StatusCode::Ok))
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -61,4 +69,3 @@ pub async fn timeline(req: Request<State>) -> tide::Result {
 
     tweets.to_response()
 }
-

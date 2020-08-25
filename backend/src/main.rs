@@ -1,8 +1,8 @@
 use dotenv;
-use::std::env as std_env;
 
+use::std::env as std_env;
 use async_trait::async_trait;
-use payloads::CreateTweetPayload;
+use payloads::*;
 use shared::*;
 use sqlx::PgPool;
 use sqlx::Pool;
@@ -49,10 +49,13 @@ async fn server(db_pool: PgPool) -> Server<State> {
     );
     server.with(middlewares::ErrorReponseToJson);
 
-    server.at("/users").post(endpoints::users::create);
+//    server.at("/users").post(endpoints::users::create);
+    add_endpoint::<CreateUser>(&mut server);
+
+    add_endpoint::<Login>(&mut server);
+
     server
         .at("/users/:username/session")
-        .post(endpoints::users::login)
         .delete(endpoints::users::logout);
     server
         .at("/users/:username/follow")
@@ -67,7 +70,8 @@ async fn server(db_pool: PgPool) -> Server<State> {
     //    server.at("/users/:username").get(endpoints::users::get);
     add_endpoint::<GetUser>(&mut server);
 
-    server.at("/me").get(endpoints::me::get);
+    // server.at("/me").get(endpoints::me::get);
+    add_endpoint::<Me>(&mut server);
     server.at("/me/timeline").get(endpoints::me::timeline);
 
     // server.at("/tweets").post(endpoints::tweets::create);
@@ -103,13 +107,21 @@ impl GetRequestPayload for NoPayLoad {
     }
 }
 
-#[async_trait]
-impl GetRequestPayload for CreateTweetPayload {
-    async fn get_payload(req: &mut Request<State>) -> tide::Result<Self> {
-        req.body_json().await
+macro_rules! impl_get_request_payload {
+    ($name: ident) => {
+        #[async_trait]
+        impl GetRequestPayload for $name {
+            async fn get_payload(req: &mut Request<State>) -> tide::Result<Self> {
+                req.body_json().await
+            }
+        }   
     }
-
 }
+
+impl_get_request_payload!(CreateTweetPayload);
+impl_get_request_payload!(LoginPayload);
+impl_get_request_payload!(CreateUserPayload);
+
 
 fn add_endpoint<E>(server: &mut Server<State>) 
 where 
