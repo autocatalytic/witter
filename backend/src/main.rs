@@ -18,6 +18,7 @@ mod endpoints;
 mod env;
 mod middlewares;
 mod responses;
+mod clock;
 
 #[async_std::main]
 async fn main() {
@@ -67,14 +68,11 @@ async fn server(db_pool: PgPool) -> Server<State> {
         .at("/users/:username/followers")
         .get(endpoints::users::followers);
 
-    //    server.at("/users/:username").get(endpoints::users::get);
     add_endpoint::<GetUser>(&mut server);
 
-    // server.at("/me").get(endpoints::me::get);
     add_endpoint::<Me>(&mut server);
-    server.at("/me/timeline").get(endpoints::me::timeline);
+    add_endpoint::<Timeline>(&mut server);
 
-    // server.at("/tweets").post(endpoints::tweets::create);
     add_endpoint::<PostTweet>(&mut server);
 
     server

@@ -48,7 +48,7 @@ impl ApiEndpoint for PostTweet {
     type Url = PostTweetUrl;
     const METHOD: Method = Method::Post;
     type Payload = payloads::CreateTweetPayload;
-    type Response = responses::TweetResponse;
+    type Response = responses::PostTweetResponse;
 }
 
 pub struct PostTweetUrl;
@@ -117,5 +117,24 @@ impl Url for CreateUserUrl {
 
     fn url(&self) -> String {
         format!("/users")
+    }
+}
+
+pub struct Timeline;
+
+impl ApiEndpoint for Timeline {
+    type Url = TimelineUrl;
+    const METHOD: Method = Method::Get;
+    type Payload = NoPayLoad;
+    type Response = Vec<responses::TweetResponse>;
+}
+
+pub struct TimelineUrl;
+
+impl Url for TimelineUrl {
+    const URL_SPEC: &'static str = "/me/timeline";
+
+    fn url(&self) -> String {
+        format!("/me/timeline")
     }
 }

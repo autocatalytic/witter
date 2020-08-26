@@ -153,7 +153,7 @@ async fn max_page_size() {
 
 }
 
-async fn post_tweet(text: &str, token: &str, server: &mut TestServer) {
+async fn post_tweet(text: &str, token: &str, server: &TestServer) {
     post(
         "/tweets",
         Some(CreateTweetPayload {
@@ -163,4 +163,40 @@ async fn post_tweet(text: &str, token: &str, server: &mut TestServer) {
     .header("Authorization", format!("Bearer {}", token))
     .send(server)
     .await;
+}
+
+#[async_std::test]
+async fn response_includes_user_who_posted_tweet() {
+    use chrono::prelude::*;
+    use crate::clock::*;
+
+    let mut server = test_setup().await;
+
+    let token = create_user_and_authenticate(&server, Some("bob".to_string())).await.token;
+
+    let time = Utc.ymd(1970, 1, 1).and_hms(0, 1, 1);
+    freeze_time::<(), _, _>(time, || async {
+        post_tweet("foo", &token, &server).await;
+    }).await;
+
+    let (json, status, _) = get("/me/timeline")
+    .header("Authorization", format!("Bearer {}", token))
+    .send(&mut server)
+    .await;
+
+    assert_eq!(status, 200);
+    assert_json_include!(
+        actual: json,
+        expected: json!({
+            "data": [
+                { 
+                    "text": "foo",
+                    "created_at": time,
+                    "user": {
+                        "username": "bob"
+                    }
+                },
+            ]
+        })
+    );
 }

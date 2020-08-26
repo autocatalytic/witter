@@ -52,7 +52,7 @@ impl TestServer {
         Self { service, test_db }
     }
 
-    pub async fn simulate(&mut self, req: Request) -> tide::Result<Response> {
+    pub async fn simulate(&self, req: Request) -> tide::Result<Response> {
         self.service.respond(req).await
     }
 }
@@ -123,7 +123,7 @@ pub enum TestRequestKind {
 impl TestRequest {
     pub async fn send(
         self,
-        server: &mut TestServer,
+        server: &TestServer,
     ) -> (Value, StatusCode, HashMap<String, String>) {
         let url = Url::parse(&format!("http://example.com{}", self.url)).unwrap();
 
@@ -166,7 +166,7 @@ impl TestRequest {
 }
 
 pub async fn create_user_and_authenticate(
-    server: &mut TestServer,
+    server: &TestServer,
     username: Option<String>,
     ) -> TokenResponse {
         let (json, status, _) = post(

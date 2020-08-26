@@ -1,5 +1,5 @@
 use crate::{Error, Model, Msg};
-use payloads::{CreateTweetPayload, LoginPayload};
+use payloads::{LoginPayload, CreateTweetPayload};
 use seed::{prelude::*, *};
 use shared::payloads::CreateUserPayload;
 use shared::responses::{ApiResponse, TokenResponse, UserResponse};
@@ -43,6 +43,26 @@ pub async fn load_user(username: String, auth_token: Option<String>) -> Msg {
         },
         NoPayLoad,
         Msg::GetUserLoaded
+    )
+    .await
+}
+
+pub async fn load_timeline(auth_token: Option<String>) -> Msg {
+    fetch::<Timeline>(
+        auth_token,
+        TimelineUrl,
+        NoPayLoad,
+        Msg::LoadTimelineEndpointResponded,
+    )
+    .await
+}
+
+pub async fn post_tweet(auth_token: Option<String>, text: String) -> Msg {
+    fetch::<PostTweet>(
+        auth_token,
+        PostTweetUrl,
+        CreateTweetPayload { text },
+        Msg::PostTweetEndpointResponded,
     )
     .await
 }
